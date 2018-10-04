@@ -40,14 +40,33 @@ const char *SDS_NOINIT;
 #include <stdarg.h>
 #include <stdint.h>
 
+/* commented: 
+ * This declaration for keeping compatible with C string, but 
+ * sds is not C string.
+ */
 typedef char *sds;
 
+/* commented: 
+ * These sdshdrs are sds header structure. The '__attribute__((packed))' 
+ * modifier is used to make compiler allocated emory in compact mode.
+*/
 /* Note: sdshdr5 is never used, we just access the flags byte directly.
  * However is here to document the layout of type 5 SDS strings. */
 struct __attribute__ ((__packed__)) sdshdr5 {
     unsigned char flags; /* 3 lsb of type, and 5 msb of string length */
     char buf[];
 };
+
+/* commented:
+ * There are 3 basic members in each header structure except sdshdr5.
+ * Mmeber 'len' is current sds length;
+ * Member 'alloc' is max capacity of current header;
+ * Mmeber 'flags' is current header type.
+ * 
+ * Member 'buf' is special array declaration in C, which indicated the 
+ * last member of current structure but self is a array. The declaration
+ * must be the last member of a structure, and no extra allocation for it.
+ */
 struct __attribute__ ((__packed__)) sdshdr8 {
     uint8_t len; /* used */
     uint8_t alloc; /* excluding the header and null terminator */
